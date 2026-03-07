@@ -48,7 +48,7 @@ function App() {
 
   return (
     <div style={{ padding: "2rem", fontFamily: "Arial, sans-serif" }}>
-      <h1>AI Data Analyst Dashboard</h1>
+      <h1>AI Data Analyst Dashboard - Demo</h1>
       <p>Upload a CSV file to preview your data.</p>
 
       <input type="file" accept=".csv" onChange={handleFileChange} />
