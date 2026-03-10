@@ -1,6 +1,7 @@
 from io import StringIO
 
 import pandas as pd
+from pydantic import BaseModel
 from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -17,6 +18,48 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+class AnalyzeRequest(BaseModel):
+    file_id: str
+    question: str
+
+@app.post("/analyze")
+def analyze_data(request: AnalyzeRequest):
+    df = dataframes.get(request.file_id)
+
+    if df is None:
+        return {"answer": "Dataset not found."}
+
+    numeric_columns = df.select_dtypes(include="number").columns.tolist()
+
+    if not numeric_columns:
+        return {"answer": "No numeric columns available for analysis."}
+
+    question_lower = request.question.lower()
+
+    column = None
+    for col in numeric_columns:
+        if col.lower() in question_lower:
+            column = col
+            break
+
+    if column is None:
+        column = numeric_columns[0]
+
+    if "highest" in question_lower or "max" in question_lower:
+        max_index = df[column].idxmax()
+        max_row = df.loc[max_index]
+        max_value = max_row[column]
+
+        return {
+            "answer": f"The highest value in {column} is {round(max_value, 2)}.",
+            "row": max_row.fillna("").to_dict()
+        }
+
+    average_value = df[column].mean()
+    return {
+        "answer": f"The average value of {column} is {round(average_value, 2)}."
+    }
 
 
 @app.get("/")

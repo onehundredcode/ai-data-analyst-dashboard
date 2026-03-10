@@ -7,6 +7,8 @@ function App() {
   const [result, setResult] = useState(null);
   const [fileId, setFileId] = useState(null);
   const [error, setError] = useState("");
+  const [question, setQuestion] = useState("");
+  const [analysisResult, setAnalysisResult] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const handleFileChange = (event) => {
@@ -50,6 +52,35 @@ function App() {
     }
   };
 
+  const handleAnalyze = async () => {
+    if (!fileId) {
+      setError("Please upload a CSV first.");
+      return;
+    }
+  
+    if (!question.trim()) {
+      setError("Please enter a question.");
+      return;
+    }
+  
+    try {
+      setError("");
+  
+      const response = await axios.post("http://127.0.0.1:8000/analyze", {
+        file_id: fileId,
+        question: question,
+      });
+  
+      setAnalysisResult(response.data);
+      console.log("Analysis response:", response.data);
+    } catch (err) {
+      console.error("Analysis error:", err);
+      setError("Analysis failed.");
+      setAnalysisResult(null);
+    }
+  };
+
+
   return (
     <div style={{ padding: "2rem", fontFamily: "Arial, sans-serif" }}>
       <h1>AI Data Analyst Dashboard - Demo</h1>
@@ -91,6 +122,27 @@ function App() {
           </table>
         </div>
       )}
+
+        <div style={{ marginTop: "2rem" }}>
+          <h2>Ask a Question</h2>
+
+          <input
+            type="text"
+            value={question}
+            onChange={(e) => setQuestion(e.target.value)}
+            placeholder="Example: What is the average salary?"
+            style={{ width: "300px", marginRight: "1rem" }}
+          />
+
+          <button onClick={handleAnalyze}>Analyze</button>
+        </div>
+
+        {analysisResult && (
+          <div style={{ marginTop: "2rem" }}>
+            <h3>Analysis Result</h3>
+            <p>{analysisResult.answer}</p>
+          </div>
+        )}
     </div>
   );
 }
