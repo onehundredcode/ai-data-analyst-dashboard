@@ -6,6 +6,9 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
+# Global dataframe storage
+dataframes = {}
+
 # Allow frontend requests during local development
 app.add_middleware(
     CORSMiddleware,
@@ -37,7 +40,14 @@ async def upload_csv(file: UploadFile = File(...)):
     # Clean NaN values for JSON response
     preview_df = df.head(5).fillna("")
 
+    import uuid
+
+    file_id = str(uuid.uuid4())
+
+    dataframes[file_id] = df
+
     return {
+        "file_id": file_id,
         "file_name": file.filename,
         "columns": df.columns.tolist(),
         "row_count": len(df),

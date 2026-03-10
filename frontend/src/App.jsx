@@ -1,9 +1,11 @@
 import { useState } from "react";
 import axios from "axios";
 
+
 function App() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [result, setResult] = useState(null);
+  const [fileId, setFileId] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -36,7 +38,9 @@ function App() {
         setError(response.data.error);
         setResult(null);
       } else {
+        console.log(response.data);
         setResult(response.data);
+        setFileId(response.data.file_id);
       }
     } catch {
       setError("Upload failed. Make sure the backend is running.");
