@@ -37,14 +37,25 @@ def analyze_data(request: AnalyzeRequest):
 
     question_lower = request.question.lower()
 
+    print("User question:", request.question)
+    print("All columns:", df.columns.tolist())
+    print("Numeric columns:", numeric_columns)
+    
+
     column = None
+    normalized_question = question_lower.replace("_", " ").strip()
+
     for col in numeric_columns:
-        if col.lower() in question_lower:
+        normalized_col = col.lower().replace("_", " ").strip()
+        if normalized_col in normalized_question:
             column = col
             break
 
     if column is None:
         column = numeric_columns[0]
+
+    print("Matched column:", column)
+
 
     if "highest" in question_lower or "max" in question_lower:
         max_index = df[column].idxmax()
@@ -54,6 +65,16 @@ def analyze_data(request: AnalyzeRequest):
         return {
             "answer": f"The highest value in {column} is {round(max_value, 2)}.",
             "row": max_row.fillna("").to_dict()
+        }
+
+    if "lowest" in question_lower or "min" in question_lower:
+        min_index = df[column].idxmin()
+        min_row = df.loc[min_index]
+        min_value = min_row[column]
+
+        return {
+            "answer": f"The lowest value in {column} is {round(min_value, 2)}.",
+            "row": min_row.fillna("").to_dict()
         }
 
     average_value = df[column].mean()

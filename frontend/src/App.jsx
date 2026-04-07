@@ -65,11 +65,18 @@ function App() {
   
     try {
       setError("");
+
+      console.log("Sending analyze request:", {
+        file_id: fileId,
+        question: question,
+      });
   
       const response = await axios.post("http://127.0.0.1:8000/analyze", {
         file_id: fileId,
         question: question,
       });
+
+      console.log("Analysis response:", response.data);
   
       setAnalysisResult(response.data);
       console.log("Analysis response:", response.data);
@@ -135,8 +142,16 @@ function App() {
         />
 
         <button onClick={handleAnalyze}>Analyze</button>
+        <p>Current analysis answer: {analysisResult?.answer}</p>
       </div>
 
+      {analysisResult && (
+        <div style={{ marginTop: "2rem" }}>
+          <h3>Analysis Result</h3>
+          <p>{analysisResult.answer}</p>
+      </div>
+      )}
+      
       {analysisResult?.row && (
         <div style={{ marginTop: "1rem" }}>
           <h4>Matching Row</h4>
