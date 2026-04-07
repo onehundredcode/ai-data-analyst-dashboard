@@ -123,26 +123,35 @@ function App() {
         </div>
       )}
 
-        <div style={{ marginTop: "2rem" }}>
-          <h2>Ask a Question</h2>
+      <div style={{ marginTop: "2rem" }}>
+        <h2>Ask a Question</h2>
 
-          <input
-            type="text"
-            value={question}
-            onChange={(e) => setQuestion(e.target.value)}
-            placeholder="Example: What is the average salary?"
-            style={{ width: "300px", marginRight: "1rem" }}
-          />
+        <input
+          type="text"
+          value={question}
+          onChange={(e) => setQuestion(e.target.value)}
+          placeholder="Example: What is the average salary?"
+          style={{ width: "300px", marginRight: "1rem" }}
+        />
 
-          <button onClick={handleAnalyze}>Analyze</button>
+        <button onClick={handleAnalyze}>Analyze</button>
+      </div>
+
+      {analysisResult?.row && (
+        <div style={{ marginTop: "1rem" }}>
+          <h4>Matching Row</h4>
+          <table border="1" cellPadding="8" style={{ borderCollapse: "collapse" }}>
+            <tbody>
+              {Object.entries(analysisResult.row).map(([key, value]) => (
+                <tr key={key}>
+                  <td><strong>{key}</strong></td>
+                  <td>{String(value)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
-
-        {analysisResult && (
-          <div style={{ marginTop: "2rem" }}>
-            <h3>Analysis Result</h3>
-            <p>{analysisResult.answer}</p>
-          </div>
-        )}
+      )}
     </div>
   );
 }
