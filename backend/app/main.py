@@ -56,6 +56,22 @@ def analyze_data(request: AnalyzeRequest):
 
     print("Matched column:", column)
 
+    if "by" in question_lower and "average" in question_lower:
+        group_columns = []
+
+        #detect grouping column (non-numeric)
+        for col in df.columns:
+            if col.lower() in question_lower and col not in numeric_columns:
+                group_columns.append(col)
+
+        if group_columns:
+            grouped = df.groupby(group_columns)[column].mean().round(2).reset_index()
+
+            return {
+                "answer": f"Average {column} by {group_columns}:",
+                "table": grouped.fillna("").to_dict(orient="records")
+            }
+
 
     if "highest" in question_lower or "max" in question_lower:
         max_index = df[column].idxmax()

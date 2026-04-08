@@ -93,16 +93,18 @@ function App() {
       <h1>AI Data Analyst Dashboard - Demo</h1>
       <p>Upload a CSV file to preview your data.</p>
 
-      <input type="file" accept=".csv" onChange={handleFileChange} />
-      <button onClick={handleUpload} style={{ marginLeft: "1rem" }}>
-        Upload CSV
-      </button>
+      <div style={{ marginBottom: "2rem" }}>
+        <input type="file" accept=".csv" onChange={handleFileChange} />
+        <button onClick={handleUpload} style={{ marginLeft: "1rem" }}>
+          Upload CSV
+        </button>
+      </div>
 
       {loading && <p>Loading...</p>}
       {error && <p style={{ color: "red" }}>{error}</p>}
 
       {result && (
-        <div style={{ marginTop: "2rem" }}>
+        <div style={{ marginTop: "2rem", marginBottom: "2rem" }}>
           <h2>File Summary</h2>
           <p><strong>File Name:</strong> {result.file_name}</p>
           <p><strong>Row Count:</strong> {result.row_count}</p>
@@ -130,9 +132,8 @@ function App() {
         </div>
       )}
 
-      <div style={{ marginTop: "2rem" }}>
+      <div style={{ marginTop: "2rem", marginBottom: "2rem" }}>
         <h2>Ask a Question</h2>
-
         <input
           type="text"
           value={question}
@@ -140,20 +141,18 @@ function App() {
           placeholder="Example: What is the average salary?"
           style={{ width: "300px", marginRight: "1rem" }}
         />
-
         <button onClick={handleAnalyze}>Analyze</button>
-        <p>Current analysis answer: {analysisResult?.answer}</p>
       </div>
 
       {analysisResult && (
         <div style={{ marginTop: "2rem" }}>
           <h3>Analysis Result</h3>
           <p>{analysisResult.answer}</p>
-      </div>
+        </div>
       )}
-      
+
       {analysisResult?.row && (
-        <div style={{ marginTop: "1rem" }}>
+        <div style={{ marginTop: "2rem" }}>
           <h4>Matching Row</h4>
           <table border="1" cellPadding="8" style={{ borderCollapse: "collapse" }}>
             <tbody>
@@ -161,6 +160,30 @@ function App() {
                 <tr key={key}>
                   <td><strong>{key}</strong></td>
                   <td>{String(value)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {analysisResult?.table && (
+        <div style={{ marginTop: "2rem" }}>
+          <h4>Grouped Results</h4>
+          <table border="1" cellPadding="8" style={{ borderCollapse: "collapse" }}>
+            <thead>
+              <tr>
+                {Object.keys(analysisResult.table[0]).map((key) => (
+                  <th key={key}>{key}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {analysisResult.table.map((row, index) => (
+                <tr key={index}>
+                  {Object.values(row).map((value, valueIndex) => (
+                    <td key={valueIndex}>{String(value)}</td>
+                  ))}
                 </tr>
               ))}
             </tbody>
